@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<!-- TextHarvesterCore properties
+	These properties configure an "ecosystem"
+	-->
+
+<properties>
+	<parameter name="MyDatabaseUser" value = "nexistw" /> <!-- CHANGEME -->
+	<parameter name="MyDatabasePwd"  value = "foo" />		  <!-- CHANGEME -->
+	<parameter name="UserDatabase" value="backsideusers" /> <!-- CHANGEME -->
+	<parameter name="UserDatabasePath" value="./data/backside" /> <!-- CHANGEME -->
+	<parameter name="InviteDatabase" value="backsideinvites" /> <!-- CHANGEME -->
+	
+	<parameter name="ServerURL" value="localhost" />  <!--  ??? CHANGEME -->
+	<parameter name="ServerPort" value="8080" /> <!-- ??? CHANGEME -->
+	
+	<!-- Server needs a default Administrator
+		These values should be changed.
+		Once an Admin logs in, should change the password again -->
+	<parameter name="DefaultAdminId" value="ef4da398-7440-4b23-b5a0-1331cc333141" /> <!-- CHANGEME -->
+	<parameter name="DefaultAdminEmail" value="default@example.com" /> <!-- CHANGEME -->
+	<parameter name="DefaultAdminName" value="therealdefaultadmin" /> <!-- CHANGEME -->
+	<parameter name="DefaultAdminPwd" value="antiquing" /> <!-- CHANGEME -->
+	
+		<!-- A list of external (plugin) servlet packages, which must include
+		their APIs, models, and handlers and any other supporting code.
+		"name" is the servlet's URL fragment, e.g. "/test"
+	 -->
+	<list name="Servlets">
+  		<parameter name="/tm" value="org.topicquests.backside.servlet.apps.tm.TopicMapServlet" />
+	</list>
+
+</properties>
+
