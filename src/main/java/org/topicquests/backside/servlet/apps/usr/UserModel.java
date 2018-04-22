@@ -22,10 +22,11 @@ import org.topicquests.backside.servlet.apps.usr.api.IUserPersist;
 import org.topicquests.backside.servlet.apps.usr.persist.H2UserDatabase;
 import org.topicquests.ks.SystemEnvironment;
 import org.topicquests.ks.api.ICoreIcons;
+import org.topicquests.ks.api.IExtendedCoreOntology;
 import org.topicquests.ks.api.ITQCoreOntology;
-import org.topicquests.ks.api.ITQDataProvider;
-import org.topicquests.ks.tm.api.ISubjectProxy;
-import org.topicquests.ks.tm.api.ISubjectProxyModel;
+import org.topicquests.ks.tm.api.IDataProvider;
+import org.topicquests.ks.tm.api.IProxy;
+import org.topicquests.ks.tm.api.IProxyModel;
 import org.topicquests.support.ResultPojo;
 import org.topicquests.support.api.IResult;
 
@@ -39,8 +40,8 @@ import java.util.UUID;
 public class UserModel implements IUserModel {
 	private ServletEnvironment environment;
 	private IUserPersist database;
-	private ITQDataProvider topicMap;
-	private ISubjectProxyModel nodeModel;
+	private IDataProvider topicMap;
+	private IProxyModel nodeModel;
 	/**
 	 * Pools Connections for each local thread
 	 * Must be closed when the thread terminates
@@ -60,8 +61,8 @@ public class UserModel implements IUserModel {
 		database = new H2UserDatabase(environment, dbName, userName, userPwd, dbPath);
 		SystemEnvironment tmenv = environment.getTopicMapEnvironment();
 		System.out.println("FOO " + tmenv);
-		topicMap = tmenv.getDatabase();
-		nodeModel = topicMap.getSubjectProxyModel();
+		topicMap = tmenv.getDataProvider();
+		nodeModel = tmenv.getProxyModel();
 		validateDefaultAdmin();
 	}
 
@@ -147,8 +148,9 @@ public class UserModel implements IUserModel {
 			String s = userFullName;
 			if (s.equals(""))
 				s = userHandle;
-			ISubjectProxy n = nodeModel.newInstanceNode(uid, ITQCoreOntology.USER_TYPE, s, "", "en",
-					ITQCoreOntology.SYSTEM_USER, ICoreIcons.PERSON_ICON_SM, ICoreIcons.PERSON_ICON, false);
+			IProxy n = nodeModel.newInstanceNode(uid, ITQCoreOntology.USER_TYPE, s, "", "en",
+					ITQCoreOntology.SYSTEM_USER, IExtendedCoreOntology.BOOTSTRAP_PROVENANCE_TYPE,
+					ICoreIcons.PERSON_ICON_SM, ICoreIcons.PERSON_ICON, false);
 			result = topicMap.putNode(n);
 		}
 		IResult x = database.insertUser(con, email, userHandle, uid, password, userFullName, avatar, role, homepage, geolocation);

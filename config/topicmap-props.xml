@@ -22,7 +22,9 @@
 	<!-- MergeListener uses a ServerSocket which is blocking.
 		If there are no listeners, it will block listening.
 		Use 'No' if no listeners are engages, otherwise, 'Yes' -->
-	<parameter name="MergeListenerPropagate" value="No" /> 
+	<parameter name="MergeListenerPropagate" value="No" />
+	
+	<parameter name="SameLabelPath" value="/data/SameLabels.json" /> <!-- change as needed -->
 
 	<!-- 
 		Allows for a plug-in dataprovider
