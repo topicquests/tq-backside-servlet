@@ -26,7 +26,7 @@
 		"name" is the servlet's URL fragment, e.g. "/test"
 	 -->
 	<list name="Servlets">
-  		<parameter name="/tm" value="org.topicquests.backside.servlet.apps.tm.TopicMapServlet" />
+  		<parameter name="/tm/*" value="org.topicquests.backside.servlet.apps.tm.TopicMapServlet" />
 	</list>
 
 </properties>

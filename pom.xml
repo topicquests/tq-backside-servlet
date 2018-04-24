@@ -20,12 +20,6 @@
             <url>https://github.com/markszpak</url>
             <id>markszpak</id>
         </developer>
-        <developer>
-            <email>alec@wenzowski.com</email>
-            <name>Alec Wenzowski</name>
-            <url>https://github.com/wenzowski</url>
-            <id>wenzowski</id>
-        </developer>
     </developers>
     <organization>
         <name>TopicQuests Foundation</name>
@@ -91,7 +85,7 @@
         <dependency>
         	<groupId>org.topicquests</groupId>
         	<artifactId>pg-tmx</artifactId>
-        	<version>0.5.0</version>
+        	<version>0.6.0</version>
         </dependency>
     </dependencies>
     <build>
