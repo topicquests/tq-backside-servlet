@@ -18,8 +18,10 @@ package org.topicquests.backside.servlet.apps.usr;
 import org.topicquests.backside.servlet.ServletEnvironment;
 import org.topicquests.backside.servlet.api.ISecurity;
 import org.topicquests.backside.servlet.apps.usr.api.IUserModel;
-import org.topicquests.backside.servlet.apps.usr.api.IUserPersist;
+import org.topicquests.backside.servlet.apps.usr.api.IH2UserPersist;
+import org.topicquests.backside.servlet.apps.usr.api.IPostgresUserPersist;
 import org.topicquests.backside.servlet.apps.usr.persist.H2UserDatabase;
+import org.topicquests.backside.servlet.apps.usr.persist.PostgresUserDatabase;
 import org.topicquests.ks.SystemEnvironment;
 import org.topicquests.ks.api.ICoreIcons;
 import org.topicquests.ks.api.IExtendedCoreOntology;
@@ -39,26 +41,18 @@ import java.util.UUID;
  */
 public class UserModel implements IUserModel {
 	private ServletEnvironment environment;
-	private IUserPersist database;
+	//private IH2UserPersist database;
+	private IPostgresUserPersist database;
 	private IDataProvider topicMap;
 	private IProxyModel nodeModel;
-	/**
-	 * Pools Connections for each local thread
-	 * Must be closed when the thread terminates
-	 */
-	private ThreadLocal<Connection> localMapConnection = new ThreadLocal<Connection>();
 
 	/**
 	 *
 	 */
 	public UserModel(ServletEnvironment env) throws Exception {
 		environment = env;
-		String dbName = environment.getStringProperty("UserDatabase");
-		String userName = environment.getStringProperty("MyDatabaseUser");
-		String userPwd = environment.getStringProperty("MyDatabasePwd");
-		String dbPath = environment.getStringProperty("UserDatabasePath");
 
-		database = new H2UserDatabase(environment, dbName, userName, userPwd, dbPath);
+		database = new PostgresUserDatabase(environment);
 		SystemEnvironment tmenv = environment.getTopicMapEnvironment();
 		System.out.println("FOO " + tmenv);
 		topicMap = tmenv.getDataProvider();
@@ -86,12 +80,7 @@ public class UserModel implements IUserModel {
 	 */
 	@Override
 	public IResult authenticate(String email, String password) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.authenticate(con, email, password);
+		return database.authenticate(email, password);
 	}
 
 	/* (non-Javadoc)
@@ -99,33 +88,18 @@ public class UserModel implements IUserModel {
 	 */
 	@Override
 	public IResult getTicketByEmail(String email) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.getTicketByEmail(con, email);
+		return database.getTicketByEmail(email);
 	}
 
 
 	@Override
 	public IResult getTicketById(String userId) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.getTicketById(con, userId);
+		return database.getTicketById(userId);
 	}
 
 	@Override
 	public IResult getTicketByHandle(String userHandle) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.getTicketByHandle(con, userHandle);
+		return database.getTicketByHandle(userHandle);
 	}
 
 
@@ -135,11 +109,6 @@ public class UserModel implements IUserModel {
 	@Override
 	public IResult insertUser(String email, String userHandle, String userId, String password, String userFullName, String avatar, String role, String homepage, String geolocation, boolean addTopic) {
 		environment.logDebug("UserModel.insertUser "+userHandle+" "+userId);
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
 		String uid = userId;
 		if (uid == null)
 			uid = UUID.randomUUID().toString();
@@ -153,7 +122,7 @@ public class UserModel implements IUserModel {
 					ICoreIcons.PERSON_ICON_SM, ICoreIcons.PERSON_ICON, false);
 			result = topicMap.putNode(n);
 		}
-		IResult x = database.insertUser(con, email, userHandle, uid, password, userFullName, avatar, role, homepage, geolocation);
+		IResult x = database.insertUser(email, userHandle, uid, password, userFullName, avatar, role, homepage, geolocation);
 		if (x.hasError())
 			result.addErrorString(x.getErrorString());
 		result.setResultObject(x.getResultObject());
@@ -177,24 +146,12 @@ public class UserModel implements IUserModel {
 	@Override
 	public IResult insertUserData(String userId, String propertyType,
 								  String propertyValue) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-
-		return database.insertUserData(con, userId, propertyType, propertyValue);
+		return database.insertUserData(userId, propertyType, propertyValue);
 	}
 
 	@Override
 	public IResult removeUserData(String userId, String propertyType, String propertyValue) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-
-		return database.removeUserData(con, userId, propertyType, propertyValue);
+		return database.removeUserData(userId, propertyType, propertyValue);
 	}
 
 
@@ -217,12 +174,7 @@ public class UserModel implements IUserModel {
 	 */
 	@Override
 	public IResult existsUsername(String handle) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.existsUsername(con, handle);
+		return database.existsUsername(handle);
 	}
 
 	@Override
@@ -244,12 +196,7 @@ public class UserModel implements IUserModel {
 	 */
 	@Override
 	public IResult removeUser(String userId) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.removeUser(con, userId);
+		return database.removeUser(userId);
 	}
 
 	/* (non-Javadoc)
@@ -257,12 +204,7 @@ public class UserModel implements IUserModel {
 	 */
 	@Override
 	public IResult changeUserPassword(String userId, String newPassword) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.changeUserPassword(con, userId, newPassword);
+		return database.changeUserPassword(userId, newPassword);
 	}
 
 	/* (non-Javadoc)
@@ -270,22 +212,12 @@ public class UserModel implements IUserModel {
 	 */
 	@Override
 	public IResult addUserRole(String userId, String newRole) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.addUserRole(con, userId, newRole);
+		return database.addUserRole(userId, newRole);
 	}
 
 	@Override
 	public IResult updateUserEmail(String userId, String newEmail) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.updateUserEmail(con, userId, newEmail);
+		return database.updateUserEmail(userId, newEmail);
 	}
 
 
@@ -294,67 +226,19 @@ public class UserModel implements IUserModel {
 	 */
 	@Override
 	public IResult listUserLocators() {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.listUserLocators(con);
+		return database.listUserLocators();
 	}
 
 	@Override
 	public IResult listUsers(int start, int count) {
-		Connection con = null;
-		IResult r = getMapConnection();
-		if (r.hasError())
-			return r;
-		con = (Connection) r.getResultObject();
-		return database.listUsers(con, start, count);
+		return database.listUsers(start, count);
 	}
 
-	private IResult getMapConnection() {
-		synchronized (localMapConnection) {
-			IResult result = new ResultPojo();
-			try {
-				Connection con = this.localMapConnection.get();
-				//because we don't "setInitialValue", this returns null if nothing for this thread
-				if (con == null) {
-					con = database.getConnection();
-					System.out.println("GETMAPCONNECTION " + con);
-					localMapConnection.set(con);
-				}
-				result.setResultObject(con);
-			} catch (Exception e) {
-				result.addErrorString(e.getMessage());
-				environment.logError(e.getMessage(), e);
-			}
-			return result;
-		}
-	}
 
-	public IResult closeLocalConnection() {
-		IResult result = new ResultPojo();
-		boolean isError = false;
-		try {
-			synchronized (localMapConnection) {
-				Connection con = this.localMapConnection.get();
-				if (con != null)
-					con.close();
-				localMapConnection.remove();
-				//  localMapConnection.set(null);
-			}
-		} catch (SQLException e) {
-			isError = true;
-			result.addErrorString(e.getMessage());
-		}
-		if (!isError)
-			result.setResultObject("OK");
-		return result;
-	}
 
 	@Override
 	public void shutDown() {
-		closeLocalConnection();
+		//
 	}
 
 

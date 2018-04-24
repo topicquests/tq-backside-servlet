@@ -18,7 +18,7 @@ package org.topicquests.backside.servlet.apps.usr.persist;
 import org.topicquests.backside.servlet.ServletEnvironment;
 import org.topicquests.backside.servlet.api.IRDBMSDatabase;
 import org.topicquests.backside.servlet.apps.usr.api.IUserMicroformat;
-import org.topicquests.backside.servlet.apps.usr.api.IUserPersist;
+import org.topicquests.backside.servlet.apps.usr.api.IH2UserPersist;
 import org.topicquests.backside.servlet.apps.usr.api.IUserSchema;
 import org.topicquests.backside.servlet.persist.rdbms.H2DatabaseDriver;
 import org.topicquests.ks.TicketPojo;
@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @author park
  */
-public class H2UserDatabase extends H2DatabaseDriver implements IUserPersist, IRDBMSDatabase {
+public class H2UserDatabase extends H2DatabaseDriver implements IH2UserPersist, IRDBMSDatabase {
 	private final String h2JdbcDriver = "org.h2.Driver";
 	private String userName, password, connectionString;
 

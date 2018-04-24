@@ -29,7 +29,7 @@ import java.sql.Connection;
 /**
  * @author Owner
  */
-public interface IUserPersist extends IRDBMSDatabase {
+public interface IH2UserPersist extends IRDBMSDatabase {
 
 	/**
 	 * Authenticate this user. Return <code>null</code> if doesn't authenticate
