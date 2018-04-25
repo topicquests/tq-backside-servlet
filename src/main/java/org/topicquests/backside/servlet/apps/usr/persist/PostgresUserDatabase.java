@@ -60,8 +60,11 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	        environment.logError("AUTH "+r.getErrorString(), null);
 	    	environment.logDebug("PostgresUserDatabase.authenticate-1 "+rs);
 	        if (rs != null) {
-	        	if (rs.next())
-	        		result.setResultObject(rs.getString(1));
+	        	if (rs.next()) {
+	        		String userid = rs.getString(1);
+	        		r = this.getTicketById(conn, userid);
+	        		result.setResultObject(r.getResultObject());
+	        	}
 	        }
 	        conn.endTransaction();
 	        conn.closeConnection(r);
