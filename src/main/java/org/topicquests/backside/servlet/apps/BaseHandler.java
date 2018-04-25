@@ -470,20 +470,7 @@ public abstract class BaseHandler {
 	///////////////////////////////////////
 	public JSONObject ticketToUser(ITicket t) {
 		//name, email, avatar, homepage, geolocation, role
-		JSONObject result = newJSONObject();
-		result.put(IUserMicroformat.USER_EMAIL, t.getEmail());
-		result.put(IUserMicroformat.USER_HANDLE, t.getHandle());
-		result.put(IUserMicroformat.USER_ID, t.getUserLocator());
-		String ava = "";
-		List<String> avas = t.listAvatars();
-		if (avas != null && avas.size() > 0)
-			ava = avas.get(0); //FOR NOW, just show first one
-		result.put(IUserMicroformat.USER_AVATAR, ava);
-		result.put(IUserMicroformat.USER_HOMEPAGE, notNullString((String)t.getProperty(IUserSchema.USER_HOMEPAGE)));
-		result.put(IUserMicroformat.USER_ROLE, t.listGroupLocators());
-		result.put(IUserMicroformat.USER_GEOLOC, t.getProperty(IUserSchema.USER_GEOLOC));
-		result.put(IUserMicroformat.USER_FULLNAME, t.getProperty(IUserSchema.USER_FULLNAME));
-		return result;
+		return t.getData();
 	}
 
 }

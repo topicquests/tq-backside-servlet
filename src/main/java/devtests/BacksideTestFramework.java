@@ -17,8 +17,8 @@ public class BacksideTestFramework {
 		//new FirstStoreTest();
 		//new SecondStoreTest();
 		//new InsertUserTest();
-		new AuthenticationTest();
-		//new ListUsers();
+		//new AuthenticationTest();
+		new ListUsers();
 	}
 
 }

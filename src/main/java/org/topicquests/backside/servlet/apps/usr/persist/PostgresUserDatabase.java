@@ -188,7 +188,7 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 					val = rs.getString("property_val");
 					environment.logDebug("PostgresUserDatabase.getTicketById-1 "+key+" "+val);
 					if (key.equals(IUserSchema.USER_ROLE))
-						t.addGroupLocator(val);
+						t.addRole(val);
 					else if (key.equals(IUserMicroformat.USER_HOMEPAGE))
 						t.setProperty(IUserMicroformat.USER_HOMEPAGE, val);
 					else
