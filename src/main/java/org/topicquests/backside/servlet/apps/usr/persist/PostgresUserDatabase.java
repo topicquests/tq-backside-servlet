@@ -502,8 +502,7 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	    try {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
-	        //conn.setUsersRORole(r);
-	        conn.setUsersRole(r);
+	        conn.setUsersRORole(r);
 	        String sql = "SELECT userid FROM tq_authentication.users ORDER BY userid OFFSET ?";
 	        int ct = 1;
 	        if (count > 0)
