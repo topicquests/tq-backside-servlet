@@ -115,22 +115,19 @@ public class Main {
         /////////////////////////
         // Boot any plugin servlets
         /////////////////////////
-        List<List<String>> cps = (List<List<String>>)environment.getProperty("Servlets");
+        List<?> cps = (List<?>)environment.getProperty("Servlets");
         if (cps != null && !cps.isEmpty()) {
         	int len = cps.size();
         	Servlet s;
-        	Class cl;
-        	Constructor co;
         	String classpath, urlFragment;
-        	List<String> x;
         	for (int i=0;i<len;i++) {
-        		x = cps.get(i);
-        		urlFragment = x.get(0);
-        		classpath = x.get(1);
+                        List<?> x = (List<?>)cps.get(i);
+        		urlFragment = (String)x.get(0);
+        		classpath = (String)x.get(1);
         		try {
         			System.out.println("Main booting: "+urlFragment+" | "+classpath);
-        			cl = Class.forName(classpath);
-        			co = cl.getConstructor(ServletEnvironment.class, String.class);
+        			Class<?> cl = Class.forName(classpath);
+        			Constructor<?> co = cl.getConstructor(ServletEnvironment.class, String.class);
         			s = (Servlet)co.newInstance(environment, basePath);
         			context.addServlet(new ServletHolder(s), urlFragment);
         		} catch (Exception e) {

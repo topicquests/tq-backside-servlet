@@ -90,11 +90,11 @@ public class AdminHandler extends BaseHandler {
 			} else {
 				//Time to take that list apart
 				if (r.getResultObject() != null) {
-					List<ITicket> usrs = (List<ITicket>) r.getResultObject();
-					Iterator<ITicket> itr = usrs.iterator();
+					List<?> usrs = (List<?>) r.getResultObject();
+					Iterator<?> itr = usrs.iterator();
 					List<JSONObject> jsonUsers = new ArrayList<JSONObject>();
 					while (itr.hasNext()) {
-						jsonUsers.add(ticketToUser(itr.next()));
+                                          jsonUsers.add(ticketToUser((ITicket)itr.next()));
 					}
 					returnMessage.put(ICredentialsMicroformat.CARGO, jsonUsers);
 				}
@@ -139,7 +139,7 @@ public class AdminHandler extends BaseHandler {
 			} else {
 
 				if (r.getResultObject() != null) {
-					List<String> invites = (List<String>) r.getResultObject();
+					List<?> invites = (List<?>) r.getResultObject();
 
 					returnMessage.put(ICredentialsMicroformat.CARGO, invites);
 				}
