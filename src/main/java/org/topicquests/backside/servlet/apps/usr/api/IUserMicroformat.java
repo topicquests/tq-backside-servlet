@@ -35,6 +35,8 @@ public interface IUserMicroformat extends ICredentialsMicroformat {
 	public static final String USER_GEOLOC = "uGeoloc";
 	public static final String USER_HOMEPAGE = "uHomepage";
 	public static final String USER_FULLNAME = "uFullName";
+	public static final String USER_LANGUAGE = "uLang";
+			
 
 	/**
 	 * starts a list of USER_PROPERTY objects

@@ -5,13 +5,20 @@ package org.topicquests.backside.servlet.apps.usr.api;
 
 
 import org.topicquests.support.api.IResult;
-
+import org.topicquests.ks.api.ITicket;;
 /**
  * @author jackpark
  *
  */
 public interface IPostgresUserPersist {
 
+	/**
+	 * Authenticate will return an {@link ITicket} if authenticated,
+	 * otherwise <code>null</code>
+	 * @param email
+	 * @param password
+	 * @return
+	 */
 	IResult authenticate(String email, String password);
 
 	IResult getTicketByHandle(String userHandle);
@@ -28,6 +35,7 @@ public interface IPostgresUserPersist {
 	 *
 	 * @param email
 	 * @param userHandle
+	 * @param languageCode 2-character code, defaults "en" if <code>null</code>
 	 * @param userId       TODO
 	 * @param password
 	 * @param userFullName TODO
@@ -39,36 +47,36 @@ public interface IPostgresUserPersist {
 	 */
 	IResult insertUser(String email,
 					   String userHandle,
-					   String userId, String password, String userFullName, String avatar, String role, String homepage, String geolocation);
+					   String languageCode, String userId, String password, String userFullName, String avatar, String role, String homepage, String geolocation);
 
-	IResult insertUserData(String userName, String propertyType, String propertyValue);
+	IResult insertUserData(String userId, String propertyType, String propertyValue);
 
-	IResult updateUserData(String userName, String propertyType, String newValue);
+	IResult updateUserData(String userId, String propertyType, String oldValue, String newValue);
 
-	IResult removeUserData(String userName, String propertyType, String oldValue);
+	IResult removeUserData(String userId, String propertyType, String oldValue);
 
 	/**
 	 * Returns Boolean value as result
 	 *
 	 * @param con
-	 * @param userName
+	 * @param handle
 	 * @return
 	 */
-	IResult existsUsername(String userName);
+	IResult existsUserHandle(String handle);
 
 	/**
-	 * @param userName
+	 * @param userId
 	 * @return
 	 */
-	IResult removeUser(String userName);
+	IResult removeUser(String userId);
 	
-	IResult changeUserPassword(String userName, String newPassword);
+	IResult changeUserPassword(String userId, String newPassword);
 
-	IResult addUserRole(String userName, String newRole);
+	IResult addUserRole(String userId, String newRole);
 
 	IResult removeUserRole(String userName, String oldRole);
 
-	IResult updateUserEmail(String userName, String newEmail);
+	IResult updateUserEmail(String userId, String newEmail);
 
 	/**
 	 * <p>Return List of <code>locators</code></p>

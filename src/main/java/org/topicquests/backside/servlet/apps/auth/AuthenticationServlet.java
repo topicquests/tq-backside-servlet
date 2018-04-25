@@ -31,11 +31,11 @@ import org.topicquests.backside.servlet.ServletEnvironment;
  */
 public class AuthenticationServlet extends HttpServlet {
 	private ServletEnvironment environment;
-	private AppHandler handler;
+	private AuthenticationHandler handler;
     
 	public AuthenticationServlet(ServletEnvironment env, String basePath) {
 		environment = env;
-		handler = new AppHandler(environment,basePath);
+		handler = new AuthenticationHandler(environment,basePath);
 	}
 		
 	

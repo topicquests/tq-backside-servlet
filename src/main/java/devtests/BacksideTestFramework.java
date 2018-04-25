@@ -15,8 +15,10 @@ public class BacksideTestFramework {
 	public static void main(String[] args) {
 		//new FirstFetchTest();
 		//new FirstStoreTest();
-		new SecondStoreTest();
-
+		//new SecondStoreTest();
+		//new InsertUserTest();
+		new AuthenticationTest();
+		//new ListUsers();
 	}
 
 }

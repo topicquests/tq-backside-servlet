@@ -38,12 +38,12 @@ import com.google.common.io.BaseEncoding;
  * @author park
  *
  */
-public class AppHandler  extends BaseHandler {
+public class AuthenticationHandler  extends BaseHandler {
 	private IUserModel model;
 	/**
 	 * 
 	 */
-	public AppHandler(ServletEnvironment env, String basePath) {
+	public AuthenticationHandler(ServletEnvironment env, String basePath) {
 		super(env,basePath);
 		model = environment.getUserModel();
 	}

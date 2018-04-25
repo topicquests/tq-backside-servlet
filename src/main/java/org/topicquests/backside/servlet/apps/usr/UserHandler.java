@@ -174,11 +174,12 @@ public class UserHandler extends BaseHandler {
 			System.out.println("NEWUSER " + homepage);
 			String geolocation = notNullString(jsonObject.getAsString(IUserMicroformat.USER_GEOLOC));
 			String role = notNullString(jsonObject.getAsString(IUserMicroformat.USER_ROLE));
+			String languageCode = jsonObject.getAsString(IUserMicroformat.USER_LANGUAGE);
 			if (role.equals(""))
 				role = ISecurity.USER_ROLE; //default role
 			byte[] foo = BaseEncoding.base64().decode(password);
 			String creds = new String(foo);
-			r = model.insertUser(email, userName, userId, creds, fullName, avatar, role, homepage, geolocation, true);
+			r = model.insertUser(email, userName, languageCode, userId, creds, fullName, avatar, role, homepage, geolocation, true);
 			System.out.println("NEWUSER2 " + r.getErrorString());
 			if (r.hasError()) {
 				code = BaseHandler.RESPONSE_INTERNAL_SERVER_ERROR;

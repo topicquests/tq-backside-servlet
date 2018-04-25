@@ -67,10 +67,11 @@ public class UserModel implements IUserModel {
 		String email = environment.getStringProperty("DefaultAdminEmail");
 		String name = environment.getStringProperty("DefaultAdminName");
 		String pwd = environment.getStringProperty("DefaultAdminPwd");
+		String languageCode = "en";
 		System.out.println("VALIDATE " + id + " | " + email + " | " + name + " | " + pwd);
 		IResult r = authenticate(email, pwd);
 		if (r.getResultObject() == null) {
-			r = this.insertUser(email, name, id, pwd, "Default Admin", "", ISecurity.ADMINISTRATOR_ROLE, "", "", false);
+			r = this.insertUser(email, name, languageCode, id, pwd, "Default Admin", "", ISecurity.ADMINISTRATOR_ROLE, "", "", false);
 			r = this.addUserRole(id, ISecurity.OWNER_ROLE);
 		}
 	}
@@ -107,7 +108,7 @@ public class UserModel implements IUserModel {
 	 * @see org.topicquests.backside.servlet.apps.usr.api.IUserModel#insertUser(java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public IResult insertUser(String email, String userHandle, String userId, String password, String userFullName, String avatar, String role, String homepage, String geolocation, boolean addTopic) {
+	public IResult insertUser(String email, String userHandle, String languageCode, String userId, String password, String userFullName, String avatar, String role, String homepage, String geolocation, boolean addTopic) {
 		environment.logDebug("UserModel.insertUser "+userHandle+" "+userId);
 		String uid = userId;
 		if (uid == null)
@@ -122,7 +123,7 @@ public class UserModel implements IUserModel {
 					ICoreIcons.PERSON_ICON_SM, ICoreIcons.PERSON_ICON, false);
 			result = topicMap.putNode(n);
 		}
-		IResult x = database.insertUser(email, userHandle, uid, password, userFullName, avatar, role, homepage, geolocation);
+		IResult x = database.insertUser(email, userHandle, languageCode, uid, password, userFullName, avatar, role, homepage, geolocation);
 		if (x.hasError())
 			result.addErrorString(x.getErrorString());
 		result.setResultObject(x.getResultObject());
@@ -174,7 +175,7 @@ public class UserModel implements IUserModel {
 	 */
 	@Override
 	public IResult existsUsername(String handle) {
-		return database.existsUsername(handle);
+		return database.existsUserHandle(handle);
 	}
 
 	@Override

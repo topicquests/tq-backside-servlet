@@ -52,6 +52,7 @@ public interface IUserModel {
 	 *
 	 * @param email
 	 * @param userHandle
+	 * @param languageCode TODO
 	 * @param userId
 	 * @param password
 	 * @param userFullName
@@ -64,9 +65,9 @@ public interface IUserModel {
 	 */
 	IResult insertUser(String email,
 					   String userHandle,
-					   String userId, String password,
-					   String userFullName, String avatar, String role,
-					   String homepage, String geolocation, boolean addTopic);
+					   String languageCode, String userId,
+					   String password, String userFullName, String avatar,
+					   String role, String homepage, String geolocation, boolean addTopic);
 
 	IResult insertUserData(String userId, String propertyType, String propertyValue);
 
