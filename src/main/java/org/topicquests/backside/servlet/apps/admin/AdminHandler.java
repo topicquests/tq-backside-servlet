@@ -54,6 +54,7 @@ public class AdminHandler extends BaseHandler {
 
 	}
 
+	
 	public void handleGet(HttpServletRequest request, HttpServletResponse response, ITicket credentials, JSONObject jsonObject) throws ServletException, IOException {
 		JSONObject returnMessage = newJSONObject();
 		String message = "", rtoken = "";
@@ -63,93 +64,99 @@ public class AdminHandler extends BaseHandler {
 		IResult r;
 		String startS, countS;
 		int start, count;
-		if (verb.equals(IAdminMicroformat.LIST_USERS)) {
-			startS = getItemFrom(jsonObject);
-			countS = getItemCount(jsonObject);
-			start = 0;
-			count = -1;
-			if (!startS.equals("")) {
-				try {
-					start = Integer.valueOf(startS);
-				} catch (Exception e1) {
-				}
-			}
-			if (!countS.equals("")) {
-				try {
-					count = Integer.valueOf(countS);
-				} catch (Exception e2) {
-				}
-			}
-			//TODO: note: we are ignoring any SORT modifiers
-			//This really returns some live cargo in the form of a list of user objects in JSON format
-			// We are restricting this to: name, email, avatar, homepage, geolocation, role
-			r = model.listUsers(start, count);
-			if (r.hasError()) {
-				code = BaseHandler.RESPONSE_INTERNAL_SERVER_ERROR;
-				message = r.getErrorString();
-			} else {
-				//Time to take that list apart
-				if (r.getResultObject() != null) {
-					List<?> usrs = (List<?>) r.getResultObject();
-					Iterator<?> itr = usrs.iterator();
-					List<JSONObject> jsonUsers = new ArrayList<JSONObject>();
-					while (itr.hasNext()) {
-                                          jsonUsers.add(ticketToUser((ITicket)itr.next()));
+		if (isAdmin(credentials) || isOwner(credentials)) {
+			if (verb.equals(IAdminMicroformat.LIST_USERS)) {
+				startS = getItemFrom(jsonObject);
+				countS = getItemCount(jsonObject);
+				start = 0;
+				count = -1;
+				if (!startS.equals("")) {
+					try {
+						start = Integer.valueOf(startS);
+					} catch (Exception e1) {
 					}
-					returnMessage.put(ICredentialsMicroformat.CARGO, jsonUsers);
 				}
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
-			}
-		} else if (verb.equals(IAdminMicroformat.EXISTS_INVITE)) {
-			String email = getEmail(jsonObject);
-			System.out.println("AdminHandler.existsInvite " + email);
-			r = model.existsInvite(email);
-			Boolean b = (Boolean) r.getResultObject();
-			if (b.booleanValue() == true) {
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
+				if (!countS.equals("")) {
+					try {
+						count = Integer.valueOf(countS);
+					} catch (Exception e2) {
+					}
+				}
+				//TODO: note: we are ignoring any SORT modifiers
+				//This really returns some live cargo in the form of a list of user objects in JSON format
+				// We are restricting this to: name, email, avatar, homepage, geolocation, role
+				r = model.listUsers(start, count);
+				if (r.hasError()) {
+					code = BaseHandler.RESPONSE_INTERNAL_SERVER_ERROR;
+					message = r.getErrorString();
+				} else {
+					//Time to take that list apart
+					if (r.getResultObject() != null) {
+						List<?> usrs = (List<?>) r.getResultObject();
+						Iterator<?> itr = usrs.iterator();
+						List<JSONObject> jsonUsers = new ArrayList<JSONObject>();
+						while (itr.hasNext()) {
+	                                          jsonUsers.add(ticketToUser((ITicket)itr.next()));
+						}
+						returnMessage.put(ICredentialsMicroformat.CARGO, jsonUsers);
+					}
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				}
+			} else if (verb.equals(IAdminMicroformat.EXISTS_INVITE)) {
+				String email = getEmail(jsonObject);
+				System.out.println("AdminHandler.existsInvite " + email);
+				r = model.existsInvite(email);
+				Boolean b = (Boolean) r.getResultObject();
+				if (b.booleanValue() == true) {
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				} else {
+					code = BaseHandler.RESPONSE_OK;
+					message = "not found";
+				}
+			} else if (verb.equals(IAdminMicroformat.LIST_INVITES)) {
+				startS = getItemFrom(jsonObject);
+				countS = getItemCount(jsonObject);
+				start = 0;
+				count = -1;
+				if (!startS.equals("")) {
+					try {
+						start = Integer.valueOf(startS);
+					} catch (Exception e1) {
+					}
+				}
+				if (!countS.equals("")) {
+					try {
+						count = Integer.valueOf(countS);
+					} catch (Exception e2) {
+					}
+				}
+				//TODO: note: we are ignoring any SORT modifiers
+				//This really returns some live cargo in the form of a list of emails in JSON format
+				r = model.listInvites(start, count);
+				if (r.hasError()) {
+					code = BaseHandler.RESPONSE_INTERNAL_SERVER_ERROR;
+					message = r.getErrorString();
+				} else {
+	
+					if (r.getResultObject() != null) {
+						List<?> invites = (List<?>) r.getResultObject();
+	
+						returnMessage.put(ICredentialsMicroformat.CARGO, invites);
+					}
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				}
 			} else {
-				code = BaseHandler.RESPONSE_OK;
-				message = "not found";
-			}
-		} else if (verb.equals(IAdminMicroformat.LIST_INVITES)) {
-			startS = getItemFrom(jsonObject);
-			countS = getItemCount(jsonObject);
-			start = 0;
-			count = -1;
-			if (!startS.equals("")) {
-				try {
-					start = Integer.valueOf(startS);
-				} catch (Exception e1) {
-				}
-			}
-			if (!countS.equals("")) {
-				try {
-					count = Integer.valueOf(countS);
-				} catch (Exception e2) {
-				}
-			}
-			//TODO: note: we are ignoring any SORT modifiers
-			//This really returns some live cargo in the form of a list of emails in JSON format
-			r = model.listInvites(start, count);
-			if (r.hasError()) {
-				code = BaseHandler.RESPONSE_INTERNAL_SERVER_ERROR;
-				message = r.getErrorString();
-			} else {
-
-				if (r.getResultObject() != null) {
-					List<?> invites = (List<?>) r.getResultObject();
-
-					returnMessage.put(ICredentialsMicroformat.CARGO, invites);
-				}
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
+				String x = IErrorMessages.BAD_VERB + "-AdminServletGet-" + verb;
+				environment.logError(x, null);
+				throw new ServletException(x);
 			}
 		} else {
-			String x = IErrorMessages.BAD_VERB + "-AdminServletGet-" + verb;
-			environment.logError(x, null);
-			throw new ServletException(x);
+			environment.logError("AdminHandler.get-Creds "+credentials.toJSONString(), null);
+			code = BaseHandler.RESPONSE_OK;
+			message = IErrorMessages.INSUFFICIENT_CREDENTIALS;
 		}
 		returnMessage.put(ICredentialsMicroformat.RESP_TOKEN, rtoken);
 		returnMessage.put(ICredentialsMicroformat.RESP_MESSAGE, message);
@@ -170,86 +177,92 @@ public class AdminHandler extends BaseHandler {
 		int code = 0;
 		IResult r;
 		String userid, userrole, useremail;
-		if (verb.equals(IAdminMicroformat.DEACTIVATE_USER)) {
-			userid = getUserId(jsonObject);
-			r = model.deactivateUser(userid, credentials);
-			if (!r.hasError()) {
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
+		if (isAdmin(credentials) || isOwner(credentials)) {
+			if (verb.equals(IAdminMicroformat.DEACTIVATE_USER)) {
+				userid = getUserId(jsonObject);
+				r = model.deactivateUser(userid, credentials);
+				if (!r.hasError()) {
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				} else {
+					code = BaseHandler.RESPONSE_OK;
+					message = r.getErrorString();
+				}
+			} else if (verb.equals(IAdminMicroformat.REACTIVATE_USER)) {
+				userid = getUserId(jsonObject);
+				r = model.reactivateUser(userid, credentials);
+				if (!r.hasError()) {
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				} else {
+					code = BaseHandler.RESPONSE_OK;
+					message = r.getErrorString();
+				}
+	
+			} else if (verb.equals(IAdminMicroformat.UPDATE_USER_EMAIL)) {
+				//TODO: really, this belongs to User app, not admin
+				userid = getUserId(jsonObject);
+				useremail = getEmail(jsonObject);
+				r = model.updateUserEmail(userid, useremail);
+				if (!r.hasError()) {
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				} else {
+					code = BaseHandler.RESPONSE_OK;
+					message = r.getErrorString();
+				}
+			} else if (verb.equals(IAdminMicroformat.UPDATE_USER_ROLE)) {
+				userid = getUserId(jsonObject);
+				userrole = getUserRole(jsonObject);
+				r = model.addUserRole(userid, userrole);
+				if (!r.hasError()) {
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				} else {
+					code = BaseHandler.RESPONSE_OK;
+					message = r.getErrorString();
+				}
+			} else if (verb.equals(IAdminMicroformat.REMOVE_USER_ROLE)) {
+				userid = getUserId(jsonObject);
+				userrole = getUserRole(jsonObject);
+				r = model.removeUserRole(userid, userrole);
+				if (!r.hasError()) {
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				} else {
+					code = BaseHandler.RESPONSE_OK;
+					message = r.getErrorString();
+				}
+			} else if (verb.equals(IAdminMicroformat.NEW_INVITE)) {
+				useremail = getEmail(jsonObject);
+				r = model.addInvite(useremail);
+				if (!r.hasError()) {
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				} else {
+					code = BaseHandler.RESPONSE_OK;
+					message = r.getErrorString();
+				}
+			} else if (verb.equals(IAdminMicroformat.REMOVE_INVITE)) {
+				useremail = getEmail(jsonObject);
+				r = model.removeInvite(useremail);
+				if (!r.hasError()) {
+					code = BaseHandler.RESPONSE_OK;
+					message = "ok";
+				} else {
+					code = BaseHandler.RESPONSE_OK;
+					message = r.getErrorString();
+				}
+	
 			} else {
-				code = BaseHandler.RESPONSE_OK;
-				message = r.getErrorString();
+				String x = IErrorMessages.BAD_VERB + "-AdminServletPost-" + verb;
+				environment.logError(x, null);
+				throw new ServletException(x);
 			}
-		} else if (verb.equals(IAdminMicroformat.REACTIVATE_USER)) {
-			userid = getUserId(jsonObject);
-			r = model.reactivateUser(userid, credentials);
-			if (!r.hasError()) {
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
-			} else {
-				code = BaseHandler.RESPONSE_OK;
-				message = r.getErrorString();
-			}
-
-		} else if (verb.equals(IAdminMicroformat.UPDATE_USER_EMAIL)) {
-			//TODO: really, this belongs to User app, not admin
-			userid = getUserId(jsonObject);
-			useremail = getEmail(jsonObject);
-			r = model.updateUserEmail(userid, useremail);
-			if (!r.hasError()) {
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
-			} else {
-				code = BaseHandler.RESPONSE_OK;
-				message = r.getErrorString();
-			}
-		} else if (verb.equals(IAdminMicroformat.UPDATE_USER_ROLE)) {
-			userid = getUserId(jsonObject);
-			userrole = getUserRole(jsonObject);
-			r = model.addUserRole(userid, userrole);
-			if (!r.hasError()) {
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
-			} else {
-				code = BaseHandler.RESPONSE_OK;
-				message = r.getErrorString();
-			}
-		} else if (verb.equals(IAdminMicroformat.REMOVE_USER_ROLE)) {
-			userid = getUserId(jsonObject);
-			userrole = getUserRole(jsonObject);
-			r = model.removeUserRole(userid, userrole);
-			if (!r.hasError()) {
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
-			} else {
-				code = BaseHandler.RESPONSE_OK;
-				message = r.getErrorString();
-			}
-		} else if (verb.equals(IAdminMicroformat.NEW_INVITE)) {
-			useremail = getEmail(jsonObject);
-			r = model.addInvite(useremail);
-			if (!r.hasError()) {
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
-			} else {
-				code = BaseHandler.RESPONSE_OK;
-				message = r.getErrorString();
-			}
-		} else if (verb.equals(IAdminMicroformat.REMOVE_INVITE)) {
-			useremail = getEmail(jsonObject);
-			r = model.removeInvite(useremail);
-			if (!r.hasError()) {
-				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
-			} else {
-				code = BaseHandler.RESPONSE_OK;
-				message = r.getErrorString();
-			}
-
 		} else {
-			String x = IErrorMessages.BAD_VERB + "-AdminServletPost-" + verb;
-			environment.logError(x, null);
-			throw new ServletException(x);
+			environment.logError("AdminHandler.put-Creds "+credentials.toJSONString(), null);
+			code = BaseHandler.RESPONSE_OK;
+			message = IErrorMessages.INSUFFICIENT_CREDENTIALS;
 		}
 		returnMessage.put(ICredentialsMicroformat.RESP_TOKEN, rtoken);
 		returnMessage.put(ICredentialsMicroformat.RESP_MESSAGE, message);

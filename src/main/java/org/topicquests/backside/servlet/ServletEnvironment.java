@@ -70,6 +70,7 @@ public class ServletEnvironment extends RootEnvironment {
 			stoppables.add(s);
 		}
 	}
+	
 	public ElasticQueryDSL getQueryDSL() {
 		return queryDSL;
 	}

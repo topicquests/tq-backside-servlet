@@ -76,7 +76,8 @@ public class InsertUserTest {
 }
 //A {"uId":"JoeSixpack","uEmail":"joe@sixpack.com","uHomepage":"http:\/\/joe.sixpack.com\/","uName":"joe","sToken":"","uLang":"en","verb":"NewUser","uFullName":"Joe Sixpack","uRole":"rur","uIP":"","uPwd":"am9lUyE="}
 //B 
-//C {"rMsg":"ok","rToken":"31159a8c-c84e-421c-ac67-99864ea5362c"}
+//C {"rMsg":"ok","rToken":"","cargo":[{"active":true,"handle":"SystemUser","uFullName":null,"locator":"SystemUser","email":"sysusr@topicquests.org"},{"active":true,"handle":"therealdefaultadmin","uFullName":"Default Admin","roleList":["rar","ror"],"locator":"ef4da398-7440-4b23-b5a0-1331cc333141","email":"default@example.com"}]}
+// NOTE: JoeSixpack not listed due to active = false and failed to be fetched
 //D 
-//E {"rMsg":"ok","rToken":"","cargo":[{"uGeoloc":null,"uEmail":"joe@sixpack.com","uId":"JoeSixpack","uHomepage":"","uName":null,"uFullName":null,"uRole":null,"uAvatar":""},{"uGeoloc":null,"uEmail":"sysusr@topicquests.org","uId":"SystemUser","uHomepage":"","uName":null,"uFullName":null,"uRole":null,"uAvatar":""},{"uGeoloc":null,"uEmail":"default@example.com","uId":"ef4da398-7440-4b23-b5a0-1331cc333141","uHomepage":"","uName":null,"uFullName":null,"uRole":null,"uAvatar":""}]}
-//some bugs there
+//E {"rMsg":"ok","rToken":"","cargo":[{"active":true,"handle":"joe","uFullName":"Joe Sixpack","roleList":["rur"],"locator":"JoeSixpack","email":"joe@sixpack.com","homepage":"http:\/\/joe.sixpack.com\/"},{"active":true,"handle":"SystemUser","uFullName":null,"locator":"SystemUser","email":"sysusr@topicquests.org"},{"active":true,"handle":"therealdefaultadmin","uFullName":"Default Admin","roleList":["rar","ror"],"locator":"ef4da398-7440-4b23-b5a0-1331cc333141","email":"default@example.com"}]}
+

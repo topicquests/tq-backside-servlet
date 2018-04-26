@@ -407,24 +407,17 @@ public abstract class BaseHandler {
 	// figuring out credentials
 	//////////////////////////////////////
 	
-	private boolean isRole(ITicket ticket, String role) {
-		boolean result = false;
-		String roles = (String)ticket.getProperty(IUserSchema.USER_ROLE);
-		if (roles != null)
-			result = (roles.indexOf(role) > -1);
-		return result;
-		
-	}
+	
 	public boolean isAdmin(ITicket ticket) {
-		return isRole(ticket, ISecurity.ADMINISTRATOR_ROLE);
+		return ticket.hasRole(ISecurity.ADMINISTRATOR_ROLE);
 	}
 	
 	public boolean isOwner(ITicket ticket) {
-		return isRole(ticket, ISecurity.OWNER_ROLE);
+		return ticket.hasRole(ISecurity.OWNER_ROLE);
 	}
 
 	public boolean isUser(ITicket ticket) {
-		return isRole(ticket, ISecurity.USER_ROLE);
+		return ticket.hasRole(ISecurity.USER_ROLE);
 	}
 	
 	public boolean isGuest(ITicket ticket) {

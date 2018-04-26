@@ -58,15 +58,25 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	        vals[0] = email;
 	        vals[1] = password;
 	        conn.executeSelect(sql, r, vals);
+	        if (r.hasError()) {
+	        	String ex = "PostgresUserDatabase.authenticate error: "+r.getErrorString();
+	        	environment.logError(ex, null);
+	        	result.addErrorString(ex);
+	        }
 	        ResultSet rs = (ResultSet)r.getResultObject();
-	        environment.logError("AUTH "+r.getErrorString(), null);
 	    	environment.logDebug("PostgresUserDatabase.authenticate-1 "+rs);
 	        if (rs != null) {
 	        	if (rs.next()) {
 	        		String userid = rs.getString(1);
-	        		r = this.getTicketById(conn, userid);
-	        		result.setResultObject(r.getResultObject());
+	        		if (userid != null) {
+	        			r = this.getTicketById(conn, userid);
+	        			result.setResultObject(r.getResultObject());
+	        		} else {
+	        			result.addErrorString(IErrorMessages.AUTHENTICATION_FAIL+" : "+email);
+	        		}
 	        	}
+	        } else {
+	        	result.addErrorString(IErrorMessages.AUTHENTICATION_FAIL+" : "+email);
 	        }
 	        conn.endTransaction(r);
 	        conn.closeConnection(r);
@@ -163,6 +173,8 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 		String sql = "SELECT * FROM tq_authentication.users WHERE userid=?";
 		IResult r = conn.executeSelect(sql, userId);
 		ResultSet rs = (ResultSet)r.getResultObject();
+		boolean isActive = true;
+		boolean haveT = false;
 		if (r.hasError())
 			result.addErrorString(r.getErrorString());
 		if (rs != null) {
@@ -173,40 +185,51 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 					t.setProperty(IUserMicroformat.USER_FULLNAME, rs.getString("full_name"));
 					t.setHandle(rs.getString("handle"));
 					t.setUserLocator(rs.getString("userid"));
+					//check active
+					if (!t.getActive()) {
+						isActive = false;
+						result.setResultObject(null);
+						result.addErrorString(IErrorMessages.INACTIVE_USER);
+					} else {
+						haveT = true;
+					}
+
 				}
+				
 			} catch (SQLException e) {
 				environment.logError(e.getMessage(), e);
 				result.addErrorString(e.getMessage());
 			}
 		}
-		//sql = "SELECT row_to_json(user_properties) FROM tq_authentication.user_properties WHERE userid=?";
-		sql = "SELECT property_key, property_val FROM tq_authentication.user_properties WHERE userid=?";
-		r = conn.executeSelect(sql, userId);
-		rs = (ResultSet)r.getResultObject();
-		if (r.hasError())
-			result.addErrorString(r.getErrorString());
-		if (rs != null) {
-			try {
-				String key, val;
-				while (rs.next()) {
-					key = rs.getString("property_key");
-					val = rs.getString("property_val");
-					environment.logDebug("PostgresUserDatabase.getTicketById-1 "+key+" "+val);
-					if (key.equals(IUserSchema.USER_ROLE))
-						t.addRole(val);
-					else if (key.equals(IUserMicroformat.USER_HOMEPAGE))
-						t.setProperty(IUserMicroformat.USER_HOMEPAGE, val);
-					else
-						t.setProperty(key, val);
-					//TODO
-					//Some might be collections: need to see if key already exists
+		if (isActive && haveT) {
+			sql = "SELECT property_key, property_val FROM tq_authentication.user_properties WHERE userid=?";
+			r = conn.executeSelect(sql, userId);
+			rs = (ResultSet)r.getResultObject();
+			if (r.hasError())
+				result.addErrorString(r.getErrorString());
+			if (rs != null) {
+				try {
+					String key, val;
+					while (rs.next()) {
+						key = rs.getString("property_key");
+						val = rs.getString("property_val");
+						environment.logDebug("PostgresUserDatabase.getTicketById-1 "+key+" "+val);
+						if (key.equals(IUserSchema.USER_ROLE))
+							t.addRole(val);
+						else if (key.equals(IUserMicroformat.USER_HOMEPAGE))
+							t.setProperty(IUserMicroformat.USER_HOMEPAGE, val);
+						else
+							t.setProperty(key, val);
+						//TODO
+						//Some might be collections: need to see if key already exists
+					}
+				} catch (Exception e) {
+					environment.logError(e.getMessage(), e);
+					result.addErrorString(e.getMessage());
 				}
-			} catch (Exception e) {
-				environment.logError(e.getMessage(), e);
-				result.addErrorString(e.getMessage());
 			}
-		}		
-		environment.logDebug("PostgresUserDatabase.getTicketById+ "+t.getData());
+		}
+		environment.logDebug("PostgresUserDatabase.getTicketById+ "+r.getErrorString()+" | "+t.getData());
 
 		return result;
 	}

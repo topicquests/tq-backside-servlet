@@ -14,7 +14,7 @@ import net.minidev.json.JSONObject;
 
 /**
  * @author jackpark
- *
+ * <em>MUST RUN InsertUserTest FIRST</em>
  */
 public class AuthenticationTest {
 	private QueryBuilder qb;
@@ -48,6 +48,6 @@ public class AuthenticationTest {
 		System.out.println("B "+r.getErrorString());
 		System.out.println("C "+r.getResultObject());
 	}
-//C {"rMsg":"ok","rToken":"0777e181-7b94-49ff-9399-55cf61abc583","cargo":{"active":true,"handle":"joe","uFullName":"Joe Sixpack","roleList":["rur"],"locator":"JoeSixpack","email":"joe@sixpack.com","homepage":"http:\/\/joe.sixpack.com\/"}}
+//C {"rMsg":"ok","rToken":"c5e041e5-5dfe-4b5b-b439-c2448169edbf","cargo":{"active":true,"handle":"joe","uFullName":"Joe Sixpack","roleList":["rur"],"locator":"JoeSixpack","email":"joe@sixpack.com","homepage":"http:\/\/joe.sixpack.com\/"}}
 
 }

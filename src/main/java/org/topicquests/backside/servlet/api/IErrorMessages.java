@@ -26,5 +26,7 @@ public interface IErrorMessages {
 		BAD_NODE_TYPE	= "BadNodeType",
 		MISSING_TOPIC	= "MissingTopic",
 		MISSING_CARGO	= "MissingCargo",
+		INACTIVE_USER	= "InactiveUser",
+		AUTHENTICATION_FAIL	= "AuthenticationFail",
 		INSUFFICIENT_CREDENTIALS = "InsufficientCredentials";
 }
