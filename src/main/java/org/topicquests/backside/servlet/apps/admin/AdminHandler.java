@@ -225,6 +225,7 @@ public class AdminHandler extends BaseHandler {
 			} else if (verb.equals(IAdminMicroformat.REMOVE_USER_ROLE)) {
 				userid = getUserId(jsonObject);
 				userrole = getUserRole(jsonObject);
+				environment.logDebug("AdminHandler.removeUserRole "+userid+" "+userrole);
 				r = model.removeUserRole(userid, userrole);
 				if (!r.hasError()) {
 					code = BaseHandler.RESPONSE_OK;

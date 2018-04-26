@@ -19,7 +19,8 @@ public class BacksideTestFramework {
 		//new InsertUserTest();
 		//new AuthenticationTest();
 		//new ListUsers();
-		new DeactivateReactivateUserTest();
+		//new DeactivateReactivateUserTest();
+		new ChangeRoleTest();
 	}
 
 }

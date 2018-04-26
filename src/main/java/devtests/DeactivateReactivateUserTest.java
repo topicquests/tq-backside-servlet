@@ -24,12 +24,10 @@ import net.minidev.json.parser.JSONParser;
 public class DeactivateReactivateUserTest {
 	private QueryBuilder qb;
 	private SimpleHttpClient client;
+	private AuthenticateDefaultAdmin admin;
 	private final String
 		BASE_URL	= "http://localhost:8080/admin/",
-		AUTH_URL	= "http://localhost:8080/auth/",
 		ADMIN_ID	= "ef4da398-7440-4b23-b5a0-1331cc333141", //Run ListUsers to get the default admin
-		ADMIN_EMAIL	= "default@example.com", // from config-props.xml
-		ADMIN_PWD	= "antiquing", // from config-props.xml
 		USER_ID		= "JoeSixpack",
 		DEACT_V		= IAdminMicroformat.DEACTIVATE_USER,
 		REACT_V		= IAdminMicroformat.REACTIVATE_USER;
@@ -40,7 +38,8 @@ public class DeactivateReactivateUserTest {
 	public DeactivateReactivateUserTest() {
 		qb = new QueryBuilder();
 		client = new SimpleHttpClient();
-		IResult r = authenticateAdmin();
+		admin = new AuthenticateDefaultAdmin();
+		IResult r = admin.auth();
 		String sToken = (String)r.getResultObject();
 		System.out.println("X "+sToken);
 //X {"rMsg":"ok","rToken":"1c8e4c44-aa7c-45a2-8f28-4248a33978fa","cargo":{"active":true,"handle":"therealdefaultadmin","uFullName":"Default Admin","roleList":["rar","ror"],"locator":"ef4da398-7440-4b23-b5a0-1331cc333141","email":"default@example.com"}}
@@ -93,19 +92,4 @@ public class DeactivateReactivateUserTest {
 		
 	}
 
-	IResult authenticateAdmin() {
-		JSONObject query = qb.coreQuery(IAuthMicroformat.AUTHENTICATE, ADMIN_ID, null, null);
-		String auth = "Basic"+ADMIN_EMAIL+":"+ADMIN_PWD; 
-		
-		query.put("hash", auth);
-		System.out.println("A "+query.toJSONString());
-		String q = query.toJSONString();
-		try {
-			q = URLEncoder.encode(q, "UTF-8");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		IResult r = client.get(AUTH_URL, q);
-		return r;
-	}
 }

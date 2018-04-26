@@ -371,12 +371,15 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
 	        conn.setUsersRole(r);
-	        String sql = "DELETE FROM tq_annotation.user_properties WHERE userId = ? AND property_key = ? AND property_value = ?";
+	        String sql = "DELETE FROM tq_authentication.user_properties WHERE userid = ? AND property_key = ? AND property_val = ?";
 	        Object [] vals = new Object[3];
 	        vals[0] = userId;
 	        vals[1] = propertyType;
 	        vals[2] = oldValue;
 	        conn.executeSQL(sql, r, vals);
+	        if (r.hasError()) {
+	        	environment.logError("PostgresUserDatabase.removeUserData "+userId+" "+propertyType+" "+oldValue+" "+r.getErrorString(), null);
+	        }
 	        conn.endTransaction(r);
 	        conn.closeConnection(r);
 		} catch (Exception e) {
