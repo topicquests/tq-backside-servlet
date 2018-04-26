@@ -25,5 +25,6 @@ public interface IErrorMessages {
 		BAD_VERB		= "BadVerb",
 		BAD_NODE_TYPE	= "BadNodeType",
 		MISSING_TOPIC	= "MissingTopic",
-		MISSING_CARGO	= "MissingCargo";
+		MISSING_CARGO	= "MissingCargo",
+		INSUFFICIENT_CREDENTIALS = "InsufficientCredentials";
 }

@@ -170,8 +170,27 @@ public class AdminHandler extends BaseHandler {
 		int code = 0;
 		IResult r;
 		String userid, userrole, useremail;
-		if (verb.equals(IAdminMicroformat.REMOVE_USER)) {
-			//TODO
+		if (verb.equals(IAdminMicroformat.DEACTIVATE_USER)) {
+			userid = getUserId(jsonObject);
+			r = model.deactivateUser(userid, credentials);
+			if (!r.hasError()) {
+				code = BaseHandler.RESPONSE_OK;
+				message = "ok";
+			} else {
+				code = BaseHandler.RESPONSE_OK;
+				message = r.getErrorString();
+			}
+		} else if (verb.equals(IAdminMicroformat.REACTIVATE_USER)) {
+			userid = getUserId(jsonObject);
+			r = model.reactivateUser(userid, credentials);
+			if (!r.hasError()) {
+				code = BaseHandler.RESPONSE_OK;
+				message = "ok";
+			} else {
+				code = BaseHandler.RESPONSE_OK;
+				message = r.getErrorString();
+			}
+
 		} else if (verb.equals(IAdminMicroformat.UPDATE_USER_EMAIL)) {
 			//TODO: really, this belongs to User app, not admin
 			userid = getUserId(jsonObject);
@@ -180,6 +199,9 @@ public class AdminHandler extends BaseHandler {
 			if (!r.hasError()) {
 				code = BaseHandler.RESPONSE_OK;
 				message = "ok";
+			} else {
+				code = BaseHandler.RESPONSE_OK;
+				message = r.getErrorString();
 			}
 		} else if (verb.equals(IAdminMicroformat.UPDATE_USER_ROLE)) {
 			userid = getUserId(jsonObject);
@@ -188,6 +210,9 @@ public class AdminHandler extends BaseHandler {
 			if (!r.hasError()) {
 				code = BaseHandler.RESPONSE_OK;
 				message = "ok";
+			} else {
+				code = BaseHandler.RESPONSE_OK;
+				message = r.getErrorString();
 			}
 		} else if (verb.equals(IAdminMicroformat.REMOVE_USER_ROLE)) {
 			userid = getUserId(jsonObject);
@@ -196,6 +221,9 @@ public class AdminHandler extends BaseHandler {
 			if (!r.hasError()) {
 				code = BaseHandler.RESPONSE_OK;
 				message = "ok";
+			} else {
+				code = BaseHandler.RESPONSE_OK;
+				message = r.getErrorString();
 			}
 		} else if (verb.equals(IAdminMicroformat.NEW_INVITE)) {
 			useremail = getEmail(jsonObject);
@@ -203,6 +231,9 @@ public class AdminHandler extends BaseHandler {
 			if (!r.hasError()) {
 				code = BaseHandler.RESPONSE_OK;
 				message = "ok";
+			} else {
+				code = BaseHandler.RESPONSE_OK;
+				message = r.getErrorString();
 			}
 		} else if (verb.equals(IAdminMicroformat.REMOVE_INVITE)) {
 			useremail = getEmail(jsonObject);
@@ -210,6 +241,9 @@ public class AdminHandler extends BaseHandler {
 			if (!r.hasError()) {
 				code = BaseHandler.RESPONSE_OK;
 				message = "ok";
+			} else {
+				code = BaseHandler.RESPONSE_OK;
+				message = r.getErrorString();
 			}
 
 		} else {

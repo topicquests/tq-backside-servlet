@@ -15,6 +15,7 @@
  */
 package org.topicquests.backside.servlet.apps.admin.api;
 
+import org.topicquests.ks.api.ITicket;
 import org.topicquests.support.api.IResult;
 
 /**
@@ -23,11 +24,20 @@ import org.topicquests.support.api.IResult;
 public interface IAdminModel extends IInviteModel {
 
 	/**
-	 * @param userName
+	 * @param userId
+	 * @param credentials requires <em>Admin</em> credentials
 	 * @return
 	 */
-	IResult removeUser(String userName);
+	IResult deactivateUser(String userId, ITicket credentials);
 
+	/**
+	 * 
+	 * @param userId
+	 * @param credentials requires <em>Admin</em> credentials
+	 * @return
+	 */
+	IResult reactivateUser(String userId, ITicket credentials);
+	
 	/**
 	 * List users for inspection
 	 *
@@ -43,15 +53,15 @@ public interface IAdminModel extends IInviteModel {
 	 * <p>At the UI, an Admin will insert or delete a role code from that string.</p>
 	 * <p>What is returned here is that revised role string.</p>
 	 *
-	 * @param userName
+	 * @param userId
 	 * @param newRole
 	 * @return
 	 */
-	IResult addUserRole(String userName, String newRole);
+	IResult addUserRole(String userId, String newRole);
 
-	IResult removeUserRole(String userName, String oldRole);
+	IResult removeUserRole(String userId, String oldRole);
 
-	IResult updateUserEmail(String userName, String newEmail);
+	IResult updateUserEmail(String userId, String newEmail);
 
 	void shutDown();
 }

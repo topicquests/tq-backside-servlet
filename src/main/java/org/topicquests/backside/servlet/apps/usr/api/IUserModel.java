@@ -17,6 +17,7 @@ package org.topicquests.backside.servlet.apps.usr.api;
 
 import org.topicquests.backside.servlet.api.ISecurity;
 import org.topicquests.support.api.IResult;
+import org.topicquests.ks.api.ITicket;
 
 /**
  * @author park
@@ -91,10 +92,19 @@ public interface IUserModel {
 
 	/**
 	 * @param userId
+	 * @param credentials requires <em>Admin</em> credentials
 	 * @return
 	 */
-	IResult removeUser(String userId);
+	IResult deactivateUser(String userId, ITicket credentials);
 
+	/**
+	 * 
+	 * @param userId
+	 * @param credentials requires <em>Admin</em> credentials
+	 * @return
+	 */
+	IResult reactivateUser(String userId, ITicket credentials);
+	
 	/**
 	 * Used when <code>grants</code> or <code>password</code> changes
 	 *

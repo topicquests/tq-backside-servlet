@@ -99,7 +99,10 @@ public class UserHandler extends BaseHandler {
 					}
 					returnMessage.put(ICredentialsMicroformat.CARGO, jsonUsers);
 					code = BaseHandler.RESPONSE_OK;
-					message = "ok";
+					if (!r.hasError())
+						message = "ok";
+					else
+						message = r.getErrorString();
 				} else {
 					message = "Not found";
 					code = BaseHandler.RESPONSE_OK;
@@ -113,7 +116,10 @@ public class UserHandler extends BaseHandler {
 				JSONObject jUser = ticketToUser(t);
 				returnMessage.put(ICredentialsMicroformat.CARGO, jUser);
 				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
+				if (!r.hasError())
+					message = "ok";
+				else
+					message = r.getErrorString();
 			} else {
 				message = "Not found";
 				code = BaseHandler.RESPONSE_OK;
@@ -126,7 +132,10 @@ public class UserHandler extends BaseHandler {
 				JSONObject jUser = ticketToUser(t);
 				returnMessage.put(ICredentialsMicroformat.CARGO, jUser);
 				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
+				if (!r.hasError())
+					message = "ok";
+				else
+					message = r.getErrorString();
 			} else {
 				message = "Not found";
 				code = BaseHandler.RESPONSE_OK;
@@ -139,7 +148,10 @@ public class UserHandler extends BaseHandler {
 				JSONObject jUser = ticketToUser(t);
 				returnMessage.put(ICredentialsMicroformat.CARGO, jUser);
 				code = BaseHandler.RESPONSE_OK;
-				message = "ok";
+				if (!r.hasError())
+					message = "ok";
+				else
+					message = r.getErrorString();
 			} else {
 				message = "Not found";
 				code = BaseHandler.RESPONSE_OK;
@@ -200,17 +212,6 @@ public class UserHandler extends BaseHandler {
 			r = model.changeUserPassword(userId, creds);
 			if (r.hasError()) {
 				code = BaseHandler.RESPONSE_INTERNAL_SERVER_ERROR;
-				message = r.getErrorString();
-			} else {
-				message = "ok";
-				code = BaseHandler.RESPONSE_OK;
-			}
-		} else if (verb.equals(IAdminMicroformat.REMOVE_USER)) {
-			String userId = getUserId(jsonObject);
-			System.out.println("UserHandler.removeUser " + userId);
-			r = model.removeUser(userId);
-			if (r.hasError()) {
-				code = BaseHandler.RESPONSE_OK;
 				message = r.getErrorString();
 			} else {
 				message = "ok";

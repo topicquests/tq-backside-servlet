@@ -21,6 +21,7 @@ import org.topicquests.backside.servlet.apps.admin.api.IInviteDatabase;
 import org.topicquests.backside.servlet.apps.admin.persist.H2InviteDatabase;
 import org.topicquests.backside.servlet.apps.usr.api.IUserModel;
 import org.topicquests.backside.servlet.apps.usr.api.IUserSchema;
+import org.topicquests.ks.api.ITicket;
 import org.topicquests.support.ResultPojo;
 import org.topicquests.support.api.IResult;
 
@@ -101,8 +102,14 @@ public class AdminModel implements IAdminModel {
 	 * @see org.topicquests.backside.servlet.apps.admin.api.IAdminModel#removeUser(java.lang.String)
 	 */
 	@Override
-	public IResult removeUser(String userId) {
-		return userModel.removeUser(userId);
+	public IResult deactivateUser(String userId, ITicket credentials) {
+		environment.logDebug("AdminModel.deactivateUser "+credentials.toJSONString());
+		return userModel.deactivateUser(userId, credentials);
+	}
+
+	@Override
+	public IResult reactivateUser(String userId, ITicket credentials) {
+		return userModel.reactivateUser(userId, credentials);
 	}
 
 	/* (non-Javadoc)
@@ -192,6 +199,5 @@ public class AdminModel implements IAdminModel {
 	public void shutDown() {
 		closeLocalConnection();
 	}
-
 
 }

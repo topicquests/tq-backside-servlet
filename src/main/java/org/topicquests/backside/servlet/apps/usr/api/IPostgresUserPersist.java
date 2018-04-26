@@ -65,16 +65,26 @@ public interface IPostgresUserPersist {
 	IResult existsUserHandle(String handle);
 
 	/**
+	 * We don't remove a user, we set their isActive flag to <code>false</code>
 	 * @param userId
+	 * @param credentials requires <em>Admin</em> credentials
 	 * @return
 	 */
-	IResult removeUser(String userId);
+	IResult deactivateUser(String userId, ITicket credentials);
+	
+	/**
+	 * Reactivate an inactive user
+	 * @param userId
+	 * @param credentials requires <em>Admin</em> credentials
+	 * @return
+	 */
+	IResult reactivateUser(String userId, ITicket credentials);
 	
 	IResult changeUserPassword(String userId, String newPassword);
 
 	IResult addUserRole(String userId, String newRole);
 
-	IResult removeUserRole(String userName, String oldRole);
+	IResult removeUserRole(String userId, String oldRole);
 
 	IResult updateUserEmail(String userId, String newEmail);
 

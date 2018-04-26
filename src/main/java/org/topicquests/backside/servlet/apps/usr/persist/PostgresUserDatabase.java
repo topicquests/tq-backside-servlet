@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topicquests.backside.servlet.ServletEnvironment;
+import org.topicquests.backside.servlet.api.IErrorMessages;
+import org.topicquests.backside.servlet.api.ISecurity;
 import org.topicquests.backside.servlet.apps.usr.api.IPostgresUserPersist;
 import org.topicquests.backside.servlet.apps.usr.api.IUserMicroformat;
 import org.topicquests.backside.servlet.apps.usr.api.IUserSchema;
@@ -18,8 +20,8 @@ import org.topicquests.ks.api.ITicket;
 import org.topicquests.support.ResultPojo;
 import org.topicquests.support.api.IResult;
 
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
+//import net.minidev.json.JSONObject;
+//import net.minidev.json.parser.JSONParser;
 
 import org.topicquests.pg.PostgresConnectionFactory;
 import org.topicquests.pg.api.IPostgresConnection;
@@ -66,7 +68,7 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	        		result.setResultObject(r.getResultObject());
 	        	}
 	        }
-	        conn.endTransaction();
+	        conn.endTransaction(r);
 	        conn.closeConnection(r);
 		} catch (Exception e) {
 			environment.logError(e.getMessage(), e);
@@ -86,6 +88,7 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	    try {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
+	        conn.setUsersRole(r);
 	        String sql = "SELECT userid FROM tq_authentication.users where handle=?";
 	        conn.executeSelect(sql, r, userHandle);
 	        ResultSet rs = (ResultSet)r.getResultObject();
@@ -113,6 +116,7 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	    try {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
+	        conn.setUsersRole(r);
 	        String sql = "SELECT userid FROM tq_authentication.users where email=?";
 	        conn.executeSelect(sql, r, email);
 	        ResultSet rs = (ResultSet)r.getResultObject();
@@ -140,6 +144,7 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	    try {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
+	        conn.setUsersRole(r);
 	        result = getTicketById(conn, userId);
 	        conn.endTransaction();
 	        conn.closeConnection(r);
@@ -298,7 +303,7 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	        vals[1] = propertyType;
 	        vals[2] = propertyValue;
 	        conn.executeSQL(sql, r, vals);
-	        conn.endTransaction();
+	        conn.endTransaction(r);
 	        conn.closeConnection(r);
 		} catch (Exception e) {
 			environment.logError(e.getMessage(), e);
@@ -317,8 +322,14 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
 	        conn.setUsersRole(r);
-	        //TODO
-	        conn.endTransaction();
+	        String sql = "UPDATE tq_authentication.user_properties SET property_val = ? WHERE userid= ? AND property_key = ? AND property_val = ?";
+	        Object [] vals = new Object[4];
+	        vals[0] = newValue;
+	        vals[1] = userId;
+	        vals[2] = propertyType;
+	        vals[3] = oldValue;
+	        conn.executeUpdate(sql, r, vals);
+	        conn.endTransaction(r);
 	        conn.closeConnection(r);
 		} catch (Exception e) {
 			environment.logError(e.getMessage(), e);
@@ -337,8 +348,13 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
 	        conn.setUsersRole(r);
-	        //TODO
-	        conn.endTransaction();
+	        String sql = "DELETE FROM tq_annotation.user_properties WHERE userId = ? AND property_key = ? AND property_value = ?";
+	        Object [] vals = new Object[3];
+	        vals[0] = userId;
+	        vals[1] = propertyType;
+	        vals[2] = oldValue;
+	        conn.executeSQL(sql, r, vals);
+	        conn.endTransaction(r);
 	        conn.closeConnection(r);
 		} catch (Exception e) {
 			environment.logError(e.getMessage(), e);
@@ -353,12 +369,75 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	@Override
 	public IResult existsUserHandle(String handle) {
 		IResult result = new ResultPojo();
+		boolean exists = false;
 	    try {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
-	        
-	        //TODO
-	        conn.endTransaction();
+	        conn.setUsersRole(r);
+	        String sql = "SELECT userid FROM tq_authentication.users WHERE handle = ?";
+	        conn.executeSelect(sql, r, handle);
+	        ResultSet rs = (ResultSet)r.getResultObject();
+	        if (rs != null && rs.next())
+	        	exists = true;
+	        conn.endTransaction(r);
+	        conn.closeConnection(r);
+		} catch (Exception e) {
+			environment.logError(e.getMessage(), e);
+		    result.addErrorString(e.getMessage());
+		}
+	    result.setResultObject(new Boolean(exists));
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.topicquests.backside.servlet.apps.usr.api.IPostgresUserPersist#removeUser(java.lang.String)
+	 */
+	@Override
+	public IResult deactivateUser(String userId, ITicket credentials) {
+		IResult result = new ResultPojo();
+		if (!credentials.hasRole(ISecurity.ADMINISTRATOR_ROLE)) {
+			result.addErrorString(IErrorMessages.INSUFFICIENT_CREDENTIALS);
+			return result;
+		}
+	    try {
+	        IPostgresConnection conn = database.getConnection();
+	        IResult r = conn.beginTransaction();
+	        conn.setUsersRole(r);
+	        String sql = "UPDATE tq_authentication.users SET active = ? WHERE userid = ?";
+	        Object [] vals = new Object[2];
+	        vals[0] = false;
+	        vals[1] = userId;
+	        conn.executeUpdate(sql, r, vals);
+	        if (r.hasError())
+	        	result.addErrorString(r.getErrorString());
+	        conn.endTransaction(r);
+	        conn.closeConnection(r);
+		} catch (Exception e) {
+			environment.logError(e.getMessage(), e);
+		    result.addErrorString(e.getMessage());
+		}
+		return result;
+	}
+	
+	@Override
+	public IResult reactivateUser(String userId, ITicket credentials) {
+		IResult result = new ResultPojo();
+		if (!credentials.hasRole(ISecurity.ADMINISTRATOR_ROLE)) {
+			result.addErrorString(IErrorMessages.INSUFFICIENT_CREDENTIALS);
+			return result;
+		}
+	    try {
+	        IPostgresConnection conn = database.getConnection();
+	        IResult r = conn.beginTransaction();
+	        conn.setUsersRole(r);
+	        String sql = "UPDATE tq_authentication.users SET active = ? WHERE userid = ?";
+	        Object [] vals = new Object[2];
+	        vals[0] = true;
+	        vals[1] = userId;
+	        conn.executeUpdate(sql, r, vals);
+	        if (r.hasError())
+	        	result.addErrorString(r.getErrorString());
+	        conn.endTransaction(r);
 	        conn.closeConnection(r);
 		} catch (Exception e) {
 			environment.logError(e.getMessage(), e);
@@ -367,25 +446,6 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.topicquests.backside.servlet.apps.usr.api.IPostgresUserPersist#removeUser(java.lang.String)
-	 */
-	@Override
-	public IResult removeUser(String userId) {
-		IResult result = new ResultPojo();
-	    try {
-	        IPostgresConnection conn = database.getConnection();
-	        IResult r = conn.beginTransaction();
-	        conn.setUsersRole(r);
-	        //TODO
-	        conn.endTransaction();
-	        conn.closeConnection(r);
-		} catch (Exception e) {
-			environment.logError(e.getMessage(), e);
-		    result.addErrorString(e.getMessage());
-		}
-		return result;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.topicquests.backside.servlet.apps.usr.api.IPostgresUserPersist#changeUserPassword(java.lang.String, java.lang.String)
@@ -423,20 +483,8 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	 * @see org.topicquests.backside.servlet.apps.usr.api.IPostgresUserPersist#removeUserRole(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public IResult removeUserRole(String userName, String oldRole) {
-		IResult result = new ResultPojo();
-	    try {
-	        IPostgresConnection conn = database.getConnection();
-	        IResult r = conn.beginTransaction();
-	        conn.setUsersRole(r);
-	        //TODO
-	        conn.endTransaction();
-	        conn.closeConnection(r);
-		} catch (Exception e) {
-			environment.logError(e.getMessage(), e);
-		    result.addErrorString(e.getMessage());
-		}
-		return result;
+	public IResult removeUserRole(String userId, String oldRole) {
+		return removeUserData(userId, IUserSchema.USER_ROLE, oldRole);
 	}
 
 	/* (non-Javadoc)
@@ -474,6 +522,7 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	    try {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
+	        conn.setUsersRole(r);
 	        String sql = "SELECT userid FROM tq_authentication.users";
 	        conn.executeSelect(sql, r);
 	        ResultSet rs = (ResultSet)r.getResultObject();
@@ -502,7 +551,8 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 	    try {
 	        IPostgresConnection conn = database.getConnection();
 	        IResult r = conn.beginTransaction();
-	        conn.setUsersRORole(r);
+	        //conn.setUsersRORole(r);
+	        conn.setUsersRole(r);
 	        String sql = "SELECT userid FROM tq_authentication.users ORDER BY userid OFFSET ?";
 	        int ct = 1;
 	        if (count > 0)
@@ -534,5 +584,6 @@ public class PostgresUserDatabase implements IPostgresUserPersist {
 		environment.logDebug("PostgresUserDatabase.listUsers+ "+l);
 		return result;
 	}
+
 
 }

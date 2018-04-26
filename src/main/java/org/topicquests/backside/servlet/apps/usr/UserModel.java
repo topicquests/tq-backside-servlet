@@ -26,6 +26,7 @@ import org.topicquests.ks.SystemEnvironment;
 import org.topicquests.ks.api.ICoreIcons;
 import org.topicquests.ks.api.IExtendedCoreOntology;
 import org.topicquests.ks.api.ITQCoreOntology;
+import org.topicquests.ks.api.ITicket;
 import org.topicquests.ks.tm.api.IDataProvider;
 import org.topicquests.ks.tm.api.IProxy;
 import org.topicquests.ks.tm.api.IProxyModel;
@@ -196,9 +197,15 @@ public class UserModel implements IUserModel {
 	 * @see org.topicquests.backside.servlet.apps.usr.api.IUserModel#removeUser(java.lang.String)
 	 */
 	@Override
-	public IResult removeUser(String userId) {
-		return database.removeUser(userId);
+	public IResult deactivateUser(String userId, ITicket credentials) {
+		return database.deactivateUser(userId, credentials);
 	}
+	
+	@Override
+	public IResult reactivateUser(String userId, ITicket credentials) {
+		return database.reactivateUser(userId, credentials);
+	}
+
 
 	/* (non-Javadoc)
 	 * @see org.topicquests.backside.servlet.apps.usr.api.IUserModel#changeUserPassword(java.lang.String, java.lang.String)
@@ -235,12 +242,9 @@ public class UserModel implements IUserModel {
 		return database.listUsers(start, count);
 	}
 
-
-
 	@Override
 	public void shutDown() {
 		//
 	}
-
 
 }
