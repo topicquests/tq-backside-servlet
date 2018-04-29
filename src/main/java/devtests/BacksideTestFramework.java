@@ -20,7 +20,8 @@ public class BacksideTestFramework {
 		//new AuthenticationTest();
 		//new ListUsers();
 		//new DeactivateReactivateUserTest();
-		new ChangeRoleTest();
+		//new ChangeRoleTest();
+		new ConversationFetchTest();
 	}
 
 }

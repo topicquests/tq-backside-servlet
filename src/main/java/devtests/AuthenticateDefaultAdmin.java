@@ -16,11 +16,10 @@ import net.minidev.json.JSONObject;
  *
  */
 public class AuthenticateDefaultAdmin {
-	private QueryBuilder qb;
-	private SimpleHttpClient client;
+	private AuthenticateAnyone auth;
 	private final String
-		AUTH_URL	= "http://localhost:8080/auth/",
-		ADMIN_ID	= "ef4da398-7440-4b23-b5a0-1331cc333141", //from config-props.xml
+//		AUTH_URL	= "http://localhost:8080/auth/",
+//		ADMIN_ID	= "ef4da398-7440-4b23-b5a0-1331cc333141", //from config-props.xml
 		ADMIN_EMAIL	= "default@example.com", // from config-props.xml
 		ADMIN_PWD	= "antiquing"; // from config-props.xml
 
@@ -28,29 +27,11 @@ public class AuthenticateDefaultAdmin {
 	 * 
 	 */
 	public AuthenticateDefaultAdmin() {
-		qb = new QueryBuilder();
-		
-		
+		auth = new AuthenticateAnyone();
 	}
 	
 	public IResult auth() {
-		client = new SimpleHttpClient();
-		JSONObject query = qb.coreQuery(IAuthMicroformat.AUTHENTICATE, ADMIN_ID, null, null);
-		String auth = "Basic"+ADMIN_EMAIL+":"+ADMIN_PWD; 
-		
-		query.put("hash", auth);
-		System.out.println("ADA-1 "+query.toJSONString());
-		String q = query.toJSONString();
-		try {
-			q = URLEncoder.encode(q, "UTF-8");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println("ADA-2 "+q);
-		IResult r = client.get(AUTH_URL, q);
-		System.out.println("ADA-3 "+r.getErrorString()+" "+r.getResultObject());
-		client = null;
-		return r;
+		return auth.auth(ADMIN_EMAIL, ADMIN_PWD);
 	}
 
 }
