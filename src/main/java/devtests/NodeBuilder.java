@@ -30,6 +30,9 @@ public class NodeBuilder {
 	 * @param label
 	 * @param details
 	 * @param language
+	 * @param conversationParent TODO
+	 * @param conversationContext TODO
+	 * @param url TODO
 	 * @param largeImagePath can be <code>null</code
 	 * @param smallImagePath can be <code>null</code
 	 * @param isPrivate
@@ -41,8 +44,11 @@ public class NodeBuilder {
 									  String label,
 									  String details,
 									  String language,
-									  String largeImagePath,
-									  String smallImagePath,
+									  String conversationParent,
+									  String conversationContext,
+									  String url, 
+									  String largeImagePath, 
+									  String smallImagePath, 
 									  boolean isPrivate) {
 		JSONObject result = new JSONObject();
 		String lox = locator;
@@ -64,6 +70,13 @@ public class NodeBuilder {
         if (isPrivate) {
             p = "T";
         }
+        if (conversationParent != null && !conversationParent.equals("") && 
+        	conversationContext != null && !conversationParent.equals("")) {
+        	result.put("ConParentLocator", conversationParent);
+        	result.put("ContextLocator", conversationContext);
+        }
+        if (url != null && !url.equals(""))
+        	result.put("url", url);
         result.put("isPrv", p);
         result.put("inOf", typeLocator);
         result.put("uId", userId);

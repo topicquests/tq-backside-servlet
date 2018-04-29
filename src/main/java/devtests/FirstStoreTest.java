@@ -35,7 +35,7 @@ public class FirstStoreTest {
 		nb = new NodeBuilder();
 		client = new SimpleHttpClient();
 		JSONObject query = qb.coreQuery(VERB, USER_ID, null, null);
-		JSONObject topic = nb.newInstanceNode(LOX, "ClassType", USER_ID, "Hello World", "Made by devtests/NodeBulder", "en", null, null, false);
+		JSONObject topic = nb.newInstanceNode(LOX, "ClassType", USER_ID, "Hello World", "Made by devtests/NodeBulder", "en", null, null, null, null, null, false);
 		query.put("cargo", topic);
 		System.out.println("X "+topic.toJSONString());
 		String q = query.toJSONString();

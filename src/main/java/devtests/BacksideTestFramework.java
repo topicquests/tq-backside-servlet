@@ -21,7 +21,8 @@ public class BacksideTestFramework {
 		//new ListUsers();
 		//new DeactivateReactivateUserTest();
 		//new ChangeRoleTest();
-		new ConversationFetchTest();
+		//new ConversationFetchTest();
+		new FirstConversationTest();
 	}
 
 }

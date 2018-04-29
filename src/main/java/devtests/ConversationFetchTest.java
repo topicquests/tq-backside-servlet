@@ -35,16 +35,16 @@ public class ConversationFetchTest {
 		qb = new QueryBuilder();
 		client = new SimpleHttpClient();
 		//simple test
-		IResult r = getConversation(ROOT_LOX);
-		System.out.println("A "+r.getErrorString());
-		System.out.println("B "+r.getResultObject());
-		System.exit(0);
+		//IResult r = getConversation(ROOT_LOX);
+		//System.out.println("A "+r.getErrorString());
+		//System.out.println("B "+r.getResultObject());
+		//System.exit(0);
 	}
 
 	public IResult getConversation(String rootLocator) {
 		IResult result = new ResultPojo();
 		JSONObject query = qb.coreQuery(VERB, "SystemUser", null, null);
-		query.put("lox", ROOT_LOX);
+		query.put("lox", rootLocator);
 		query.put("Lang", "en");
 		System.out.println("A "+query.toJSONString());
 		String q = query.toJSONString();
