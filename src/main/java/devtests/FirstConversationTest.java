@@ -31,7 +31,8 @@ public class FirstConversationTest {
 		USER_EMAIL	= "joe@sixpack.com",
 		USER_PWD	= "joeS!",
 		ROOT_LOX	= UUID.randomUUID().toString(),
-		VERB		= "NewConvNode";
+		VERB		= "NewConvNode",
+		PROV		= null; //provenance locator
 		
 
 	/**
@@ -59,6 +60,7 @@ public class FirstConversationTest {
 	
 	void doConversation(String sToken) {
 		System.out.println("A "+sToken);
+		//MAKE a ROOT NODE
 		JSONObject a = newConversationNode(ROOT_LOX, INodeTypes.ISSUE_TYPE, "Why is the sky blue?",
 				"Inquiring minds really want to know", null, null);
 		IResult r = runQuery(a, sToken);
@@ -71,13 +73,16 @@ public class FirstConversationTest {
 		try {
 			x = (JSONObject)p.parse(xx);
 		} catch (Exception e) {e.printStackTrace();}
-		
+		// x is the Root Node
+		//Fetch the root node to prove it was stored
 		r = nodeFetcher.fetchNode(ROOT_LOX);
 		System.out.println("SANITY "+r.getErrorString()+" "+r.getResultObject());
+		//CREATE a child node with root as context and parent
 		a = newConversationNode(null, INodeTypes.ISSUE_TYPE, "Who wants to know?",
 				"Inquiring minds still want to know", ROOT_LOX, ROOT_LOX);
 		r = runQuery(a, sToken);
 		xx = (String)r.getResultObject();
+		System.out.println("XXXX "+xx);
 		try {
 			x = (JSONObject)p.parse(xx);
 		} catch (Exception e) {e.printStackTrace();};
@@ -118,6 +123,7 @@ public class FirstConversationTest {
 
 	JSONObject newConversationNode(String locator, String type, String label, String details, String parentLocator, String contextLocator) {
 		JSONObject result = nb.newInstanceNode(locator, type, USER_ID, label, details, "en", parentLocator, contextLocator, null, null, null, false);
+		result.put("ProvLox", PROV);
 		return result;
 	}
 	
