@@ -62,7 +62,7 @@ public class FirstConversationTest {
 		System.out.println("A "+sToken);
 		//MAKE a ROOT NODE
 		JSONObject a = newConversationNode(ROOT_LOX, INodeTypes.ISSUE_TYPE, "Why is the sky blue?",
-				"Inquiring minds really want to know", null, null);
+				"Inquiring minds really want to know", "", ROOT_LOX);
 		IResult r = runQuery(a, sToken);
 		String xx = (String)r.getResultObject();
 		System.out.println("B "+xx);
