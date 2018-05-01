@@ -60,7 +60,12 @@ public class FirstConversationTest {
 	
 	void doConversation(String sToken) {
 		System.out.println("A "+sToken);
-		//MAKE a ROOT NODE
+		//////////////////////
+		// MAKE a ROOT NODE
+		// A root node must have itself as context and an empty string
+		// as its parent node locator
+		// ROOT_LOX will then serve as context for remaining nodes
+		/////////////////////
 		JSONObject a = newConversationNode(ROOT_LOX, INodeTypes.ISSUE_TYPE, "Why is the sky blue?",
 				"Inquiring minds really want to know", "", ROOT_LOX);
 		IResult r = runQuery(a, sToken);
@@ -124,6 +129,7 @@ public class FirstConversationTest {
 	JSONObject newConversationNode(String locator, String type, String label, String details, String parentLocator, String contextLocator) {
 		JSONObject result = nb.newInstanceNode(locator, type, USER_ID, label, details, "en", parentLocator, contextLocator, null, null, null, false);
 		result.put("ProvLox", PROV);
+		System.out.println("FirstConversationTest.newCon "+result);
 		return result;
 	}
 	

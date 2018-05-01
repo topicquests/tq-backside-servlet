@@ -70,8 +70,9 @@ public class NodeBuilder {
         if (isPrivate) {
             p = "T";
         }
-        if (conversationParent != null && !conversationParent.equals("") && 
-        	conversationContext != null && !conversationParent.equals("")) {
+        
+        if (conversationParent != null  && 
+        	conversationContext != null && !conversationContext.equals("")) {
         	result.put("ConParentLocator", conversationParent);
         	result.put("ContextLocator", conversationContext);
         }
